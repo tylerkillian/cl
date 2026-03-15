@@ -16,18 +16,18 @@ char* read_file(Memory *memory, char *filename) {
 	fclose(file);
 
 	result = (char*)Memory_malloc(memory, (num_characters + 1) * sizeof(char));
-	result[num_characters] = '\0';
 
 	file = fopen(filename, "r");
 	character_index = 0;
 	c = fgetc(file);
 	while (c != EOF) {
-		num_characters++;
-		c = fgetc(file);
 		result[character_index] = c;
+		c = fgetc(file);
 		character_index++;
 	}
 	fclose(file);
+
+	result[num_characters] = '\0';
 
 	return result;
 }

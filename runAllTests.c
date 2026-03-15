@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
 
 	cl_load(memory, filename);
 
+	Memory_assert_empty(memory);
 	Memory_destroy(memory);
 	return 0;
 }
