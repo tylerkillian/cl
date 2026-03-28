@@ -12,5 +12,6 @@ void cl_load(Memory *memory, char *filename) {
 	stream = Stream_create(memory, filename);
 	object = read(memory, stream);
 	Object_print(object);
+	Object_destroy(object);
 	Stream_destroy(stream);
 }

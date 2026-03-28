@@ -9,7 +9,8 @@ typedef struct {
 } Stream;
 
 Stream* Stream_create(Memory *memory, char *filename);
-char Stream_getNextCharacter(Stream *stream);
 void Stream_destroy(Stream *stream);
+char Stream_getNextCharacter(Stream *stream);
+void Stream_prepend(Stream *s, char c);
 
 #endif

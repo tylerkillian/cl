@@ -12,6 +12,11 @@ Stream* Stream_create(Memory *memory, char *filename) {
 	return stream;
 }
 
+void Stream_destroy(Stream *stream) {
+	Memory_free(stream->memory, stream->buffer);
+	Memory_free(stream->memory, stream);
+}
+
 char Stream_getNextCharacter(Stream *stream) {
 	int currentLength;
 	char *buffer, nextCharacter;
@@ -31,7 +36,14 @@ char Stream_getNextCharacter(Stream *stream) {
 	}
 }
 
-void Stream_destroy(Stream *stream) {
-	Memory_free(stream->memory, stream->buffer);
-	Memory_free(stream->memory, stream);
+void Stream_prepend(Stream *stream, char c) {
+        int currentLength;
+        char *buffer;
+
+        currentLength = strlen(stream->buffer);
+        buffer = (char*)Memory_malloc(stream->memory, (currentLength + 2) * sizeof(char));
+        buffer[0] = c;
+        strcpy(buffer + 1, stream->buffer);
+        Memory_free(stream->memory, stream->buffer);
+        stream->buffer = buffer;
 }
