@@ -69,6 +69,7 @@ Object* read(Memory *memory, Stream *stream) {
 		printf("[%c]\n", x);
 		if (isWhitespace(x)) {
 			printf("got whitespace\n");
+		} else if (x == '(') {
 		} else if (isConstituent(x)) {
 			token = _readToken(memory, stream);
 			String_prepend(token, x);
