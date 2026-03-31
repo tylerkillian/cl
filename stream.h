@@ -4,13 +4,13 @@
 #include <memory.h>
 
 typedef struct {
-	Memory *memory;
+	memory_t *memory;
 	char *buffer;
-} Stream;
+} stream_t;
 
-Stream* Stream_create(Memory *memory, char *filename);
-void Stream_destroy(Stream *stream);
-char Stream_getNextCharacter(Stream *stream);
-void Stream_prepend(Stream *s, char c);
+stream_t* stream_create(memory_t *memory, char *filename);
+void stream_destroy(stream_t *stream);
+char stream_get_next_character(stream_t *stream);
+void stream_prepend(stream_t *s, char c);
 
 #endif

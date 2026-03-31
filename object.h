@@ -7,16 +7,16 @@ typedef enum {
 	NUMBER,
 	SYMBOL,
 	NIL
-} ObjectType;
+} object_type_e;
 
 typedef struct {
-	Memory *memory;
-	ObjectType type;
-} Object;
+	memory_t *memory;
+	object_type_e type;
+} object_t;
 
-Object* Object_create(Memory *memory);
-void Object_destroy(Object *object);
-Object* Object_interpretToken(Memory *memory, String *token);
-void Object_print(Object *object);
+object_t* object_create(memory_t *memory);
+void object_destroy(object_t *object);
+object_t* object_interpret_token(memory_t *memory, string_t *token);
+void object_print(object_t *object);
 
 #endif

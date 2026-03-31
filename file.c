@@ -1,7 +1,7 @@
 #include <file.h>
 #include <stdio.h>
 
-char* read_file(Memory *memory, char *filename) {
+char* read_file(memory_t *memory, char *filename) {
 	int num_characters, character_index;
 	char c, *result;
 	FILE *file;
@@ -15,7 +15,7 @@ char* read_file(Memory *memory, char *filename) {
 	}
 	fclose(file);
 
-	result = (char*)Memory_malloc(memory, (num_characters + 1) * sizeof(char));
+	result = (char*)memory_malloc(memory, (num_characters + 1) * sizeof(char));
 
 	file = fopen(filename, "r");
 	character_index = 0;

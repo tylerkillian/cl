@@ -3,6 +3,6 @@
 
 #include <memory.h>
 
-void cl_load(Memory *memory, char *filename);
+void cl_load(memory_t *memory, char *filename);
 
 #endif

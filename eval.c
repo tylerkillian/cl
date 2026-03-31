@@ -1,8 +1,8 @@
 #include <eval.h>
 
-Value* eval(Object *form) {
-	Value *result;
+value_t* eval(object_t *form) {
+	value_t *result;
 	form = NULL;
-	result = (Value*)form;
+	result = (value_t*)form;
 	return result;
 }

@@ -4,6 +4,6 @@
 #include <object.h>
 #include <value.h>
 
-Value* eval(Object *form);
+value_t* eval(object_t *form);
 
 #endif

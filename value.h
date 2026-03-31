@@ -4,7 +4,7 @@
 #include <memory.h>
 
 typedef struct {
-	Memory *memory;
-} Value;
+	memory_t *memory;
+} value_t;
 
 #endif

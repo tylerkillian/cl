@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <str.h>
 
-Boolean isWhitespace(char c) {
+boolean isWhitespace(char c) {
 	if (c == ' ') {
 		return TRUE;
 	} else {
@@ -11,7 +11,7 @@ Boolean isWhitespace(char c) {
 	}
 }
 
-Boolean isConstituent(char c) {
+boolean isConstituent(char c) {
 	if (isWhitespace(c)) {
 		return FALSE;
 	} else {
@@ -19,22 +19,22 @@ Boolean isConstituent(char c) {
 	}
 }
 
-String* _readToken(Memory *memory, Stream *stream) {
+string_t* _readToken(memory_t *memory, stream_t *stream) {
 	char x;
-	String *result;
+	string_t *result;
 
-	result = String_create(memory);
-	x = Stream_getNextCharacter(stream);
+	result = string_create(memory);
+	x = stream_get_next_character(stream);
 	while (x != EOF) {
 		if (isConstituent(x)) {
-			String_append(result, x);
+			string_append(result, x);
 		} else if (isWhitespace(x)) {
 			break;
 		} else {
-			Stream_prepend(stream, x);
+			stream_prepend(stream, x);
 			break;
 		}
-		x = Stream_getNextCharacter(stream);
+		x = stream_get_next_character(stream);
 	}
 	return result;
 
@@ -57,14 +57,14 @@ String* _readToken(Memory *memory, Stream *stream) {
 	    */
 }
 
-Object* read(Memory *memory, Stream *stream) {
+object_t* read(memory_t *memory, stream_t *stream) {
 	char x;
-	String *token;
-	Object *result;
+	string_t *token;
+	object_t *result;
 
 	result = NULL;
 
-	x = Stream_getNextCharacter(stream);
+	x = stream_get_next_character(stream);
 	while (x != EOF) {
 		printf("[%c]\n", x);
 		if (isWhitespace(x)) {
@@ -72,19 +72,19 @@ Object* read(Memory *memory, Stream *stream) {
 		} else if (x == '(') {
 		} else if (isConstituent(x)) {
 			token = _readToken(memory, stream);
-			String_prepend(token, x);
+			string_prepend(token, x);
 			printf("x = %c ; token = %s\n", x, token->buffer);
-			result = Object_interpretToken(memory, token);
-			String_destroy(token);
+			result = object_interpret_token(memory, token);
+			string_destroy(token);
 			break;
 		} else {
 		}
-		x = Stream_getNextCharacter(stream);
+		x = stream_get_next_character(stream);
 	}
 
 	if (result) {
 		return result;
 	} else {
-		return Object_create(memory);
+		return object_create(memory);
 	}
 }

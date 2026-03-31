@@ -4,6 +4,6 @@
 #include <object.h>
 #include <stream.h>
 
-Object* read(Memory *memory, Stream *stream);
+object_t* read(memory_t *memory, stream_t *stream);
 
 #endif

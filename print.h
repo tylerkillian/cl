@@ -3,6 +3,6 @@
 
 #include <value.h>
 
-void print(Value *value);
+void print(value_t *value);
 
 #endif

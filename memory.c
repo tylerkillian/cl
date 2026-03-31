@@ -2,21 +2,21 @@
 #include <memory.h>
 #include <string.h>
 
-Memory* Memory_create() {
-	Memory *memory;
+memory_t* memory_create() {
+	memory_t *memory;
 
-	memory = (Memory*)malloc(sizeof(Memory));
+	memory = (memory_t*)malloc(sizeof(memory_t));
 	memory->blocks = NULL;
 	memory->num_blocks = 0;
 
 	return memory;
 }
 
-void Memory_destroy(Memory *memory) {
+void memory_destroy(memory_t *memory) {
 	free(memory);
 }
 
-void _add_block(Memory *memory, void *ptr) {
+void _add_block(memory_t *memory, void *ptr) {
         void **blocks;
 
         blocks = (void**)malloc((memory->num_blocks + 1) * sizeof(void*));
@@ -31,7 +31,7 @@ void _add_block(Memory *memory, void *ptr) {
         memory->num_blocks++;
 }
 
-void* Memory_malloc(Memory *memory, size_t size) {
+void* memory_malloc(memory_t *memory, size_t size) {
 	void *result;
 
 	result = malloc(size);
@@ -41,7 +41,7 @@ void* Memory_malloc(Memory *memory, size_t size) {
 	return result;
 }
 
-void _remove_block(Memory *memory, void *ptr) {
+void _remove_block(memory_t *memory, void *ptr) {
         int index;
         void **blocks;
 
@@ -68,12 +68,12 @@ void _remove_block(Memory *memory, void *ptr) {
         memory->num_blocks--;
 }
 
-void Memory_free(Memory *memory, void *block) {
+void memory_free(memory_t *memory, void *block) {
 	_remove_block(memory, block);
 	free(block);
 }
 
-void Memory_assert_empty(Memory *memory) {
+void memory_assert_empty(memory_t *memory) {
         assert(memory->num_blocks == 0);
         assert(memory->blocks == NULL);
 }

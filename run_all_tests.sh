@@ -10,7 +10,7 @@ COMPILERS=(
 )
 for compiler in "${COMPILERS[@]}"
 do
-	$compiler -pedantic -Wall -Wextra -Werror -I./ -o runAllTests *.c
-	./runAllTests run-all-tests.lisp
-	rm runAllTests
+	$compiler -pedantic -Wall -Wextra -Werror -I./ -o run_all_tests *.c
+	./run_all_tests run-all-tests.lisp
+	rm run_all_tests
 done

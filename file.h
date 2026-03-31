@@ -3,6 +3,6 @@
 
 #include <memory.h>
 
-char* read_file(Memory *memory, char *filename);
+char* read_file(memory_t *memory, char *filename);
 
 #endif

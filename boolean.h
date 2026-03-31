@@ -4,6 +4,6 @@
 typedef enum {
         FALSE,
         TRUE
-} Boolean;
+} boolean;
 
 #endif

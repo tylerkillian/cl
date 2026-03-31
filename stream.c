@@ -3,21 +3,21 @@
 #include <stream.h>
 #include <string.h>
 
-Stream* Stream_create(Memory *memory, char *filename) {
-	Stream *stream;
-	stream = (Stream*)Memory_malloc(memory, sizeof(Stream));
+stream_t* stream_create(memory_t *memory, char *filename) {
+	stream_t *stream;
+	stream = (stream_t*)memory_malloc(memory, sizeof(stream_t));
 	stream->memory = memory;
 	stream->buffer = read_file(memory, filename);
 	printf("%s", stream->buffer);
 	return stream;
 }
 
-void Stream_destroy(Stream *stream) {
-	Memory_free(stream->memory, stream->buffer);
-	Memory_free(stream->memory, stream);
+void stream_destroy(stream_t *stream) {
+	memory_free(stream->memory, stream->buffer);
+	memory_free(stream->memory, stream);
 }
 
-char Stream_getNextCharacter(Stream *stream) {
+char stream_get_next_character(stream_t *stream) {
 	int currentLength;
 	char *buffer, nextCharacter;
 
@@ -25,9 +25,9 @@ char Stream_getNextCharacter(Stream *stream) {
 	if (currentLength > 0) {
 		nextCharacter = stream->buffer[0];
 
-		buffer = (char*)Memory_malloc(stream->memory, currentLength * sizeof(char));
+		buffer = (char*)memory_malloc(stream->memory, currentLength * sizeof(char));
 		strcpy(buffer, &stream->buffer[1]);
-		Memory_free(stream->memory, stream->buffer);
+		memory_free(stream->memory, stream->buffer);
 		stream->buffer = buffer;
 
 		return nextCharacter;
@@ -36,14 +36,14 @@ char Stream_getNextCharacter(Stream *stream) {
 	}
 }
 
-void Stream_prepend(Stream *stream, char c) {
+void stream_prepend(stream_t *stream, char c) {
         int currentLength;
         char *buffer;
 
         currentLength = strlen(stream->buffer);
-        buffer = (char*)Memory_malloc(stream->memory, (currentLength + 2) * sizeof(char));
+        buffer = (char*)memory_malloc(stream->memory, (currentLength + 2) * sizeof(char));
         buffer[0] = c;
         strcpy(buffer + 1, stream->buffer);
-        Memory_free(stream->memory, stream->buffer);
+        memory_free(stream->memory, stream->buffer);
         stream->buffer = buffer;
 }

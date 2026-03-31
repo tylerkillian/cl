@@ -6,18 +6,16 @@
 #include <stream.h>
 #include <value.h>
 
-void cl_load(Memory *memory, char *filename) {
-	Object *object;
-	Value *value;
-	Stream *stream;
+void cl_load(memory_t *memory, char *filename) {
+	object_t *object;
+	value_t *value;
+	stream_t *stream;
 
-	printf("Loading %s\n", filename);
-
-	stream = Stream_create(memory, filename);
+	stream = stream_create(memory, filename);
 	object = read(memory, stream);
 	value = eval(object);
 	print(value);
-	Object_print(object);
-	Object_destroy(object);
-	Stream_destroy(stream);
+	object_print(object);
+	object_destroy(object);
+	stream_destroy(stream);
 }

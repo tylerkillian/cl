@@ -4,13 +4,13 @@
 #include <memory.h>
 
 typedef struct {
-	Memory *memory;
+	memory_t *memory;
 	char *buffer;
-} String;
+} string_t;
 
-String* String_create(Memory *memory);
-void String_destroy(String* s);
-void String_prepend(String *s, char c);
-void String_append(String *s, char c);
+string_t* string_create(memory_t *memory);
+void string_destroy(string_t* s);
+void string_prepend(string_t *s, char c);
+void string_append(string_t *s, char c);
 
 #endif
