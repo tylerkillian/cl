@@ -18,30 +18,30 @@ void stream_destroy(stream_t *stream) {
 }
 
 char stream_get_next_character(stream_t *stream) {
-	int currentLength;
-	char *buffer, nextCharacter;
+	int current_length;
+	char *buffer, next_character;
 
-	currentLength = strlen(stream->buffer);
-	if (currentLength > 0) {
-		nextCharacter = stream->buffer[0];
+	current_length = strlen(stream->buffer);
+	if (current_length > 0) {
+		next_character = stream->buffer[0];
 
-		buffer = (char*)memory_malloc(stream->memory, currentLength * sizeof(char));
+		buffer = (char*)memory_malloc(stream->memory, current_length * sizeof(char));
 		strcpy(buffer, &stream->buffer[1]);
 		memory_free(stream->memory, stream->buffer);
 		stream->buffer = buffer;
 
-		return nextCharacter;
+		return next_character;
 	} else {
 		return EOF;
 	}
 }
 
 void stream_prepend(stream_t *stream, char c) {
-        int currentLength;
+        int current_length;
         char *buffer;
 
-        currentLength = strlen(stream->buffer);
-        buffer = (char*)memory_malloc(stream->memory, (currentLength + 2) * sizeof(char));
+        current_length = strlen(stream->buffer);
+        buffer = (char*)memory_malloc(stream->memory, (current_length + 2) * sizeof(char));
         buffer[0] = c;
         strcpy(buffer + 1, stream->buffer);
         memory_free(stream->memory, stream->buffer);

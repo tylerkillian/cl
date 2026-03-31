@@ -5,7 +5,7 @@ object_t* object_create(memory_t *memory) {
         object_t *object;
         object = (object_t*)memory_malloc(memory, sizeof(object_t));
         object->memory = memory;
-	object->type = NIL;
+	object->object_type = NIL;
         return object;
 }
 
@@ -19,7 +19,7 @@ object_t* object_interpret_token(memory_t *memory, string_t *token) {
 	printf("Interpreting %s\n", token->buffer);
 
 	result = object_create(memory);
-	result->type = SYMBOL;
+	result->object_type = SYMBOL;
 	return result;
 }
 

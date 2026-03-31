@@ -11,7 +11,7 @@ typedef enum {
 
 typedef struct {
 	memory_t *memory;
-	object_type_e type;
+	object_type_e object_type;
 } object_t;
 
 object_t* object_create(memory_t *memory);

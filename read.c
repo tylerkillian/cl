@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <str.h>
 
-boolean isWhitespace(char c) {
+boolean is_whitespace(char c) {
 	if (c == ' ') {
 		return TRUE;
 	} else {
@@ -11,24 +11,24 @@ boolean isWhitespace(char c) {
 	}
 }
 
-boolean isConstituent(char c) {
-	if (isWhitespace(c)) {
+boolean is_constituent(char c) {
+	if (is_whitespace(c)) {
 		return FALSE;
 	} else {
 		return TRUE;
 	}
 }
 
-string_t* _readToken(memory_t *memory, stream_t *stream) {
+string_t* _read_token(memory_t *memory, stream_t *stream) {
 	char x;
 	string_t *result;
 
 	result = string_create(memory);
 	x = stream_get_next_character(stream);
 	while (x != EOF) {
-		if (isConstituent(x)) {
+		if (is_constituent(x)) {
 			string_append(result, x);
-		} else if (isWhitespace(x)) {
+		} else if (is_whitespace(x)) {
 			break;
 		} else {
 			stream_prepend(stream, x);
@@ -67,11 +67,11 @@ object_t* read(memory_t *memory, stream_t *stream) {
 	x = stream_get_next_character(stream);
 	while (x != EOF) {
 		printf("[%c]\n", x);
-		if (isWhitespace(x)) {
+		if (is_whitespace(x)) {
 			printf("got whitespace\n");
 		} else if (x == '(') {
-		} else if (isConstituent(x)) {
-			token = _readToken(memory, stream);
+		} else if (is_constituent(x)) {
+			token = _read_token(memory, stream);
 			string_prepend(token, x);
 			printf("x = %c ; token = %s\n", x, token->buffer);
 			result = object_interpret_token(memory, token);

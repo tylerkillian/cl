@@ -1,8 +1,11 @@
 #include <eval.h>
 
-value_t* eval(object_t *form) {
+#include <assert.h>
+value_t* eval(memory_t *memory, object_t *form) {
 	value_t *result;
-	form = NULL;
-	result = (value_t*)form;
+
+	assert(form != NULL);
+
+	result = value_create(memory);
 	return result;
 }

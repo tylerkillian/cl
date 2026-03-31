@@ -7,4 +7,7 @@ typedef struct {
 	memory_t *memory;
 } value_t;
 
+value_t* value_create(memory_t *memory);
+void value_destroy(value_t *value);
+
 #endif

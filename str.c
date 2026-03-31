@@ -16,11 +16,11 @@ void string_destroy(string_t *s) {
 }
 
 void string_prepend(string_t *s, char c) {
-	int currentLength;
+	int current_length;
 	char *buffer;
 
-	currentLength = strlen(s->buffer);
-	buffer = (char*)memory_malloc(s->memory, (currentLength + 2) * sizeof(char));
+	current_length = strlen(s->buffer);
+	buffer = (char*)memory_malloc(s->memory, (current_length + 2) * sizeof(char));
 	buffer[0] = c;
 	strcpy(buffer + 1, s->buffer);
 	memory_free(s->memory, s->buffer);
@@ -28,13 +28,13 @@ void string_prepend(string_t *s, char c) {
 }
 
 void string_append(string_t *s, char c) {
-	int currentLength;
+	int current_length;
 	char *buffer;
 
-	currentLength = strlen(s->buffer);
-	buffer = (char*)memory_malloc(s->memory, (currentLength + 2) * sizeof(char));
+	current_length = strlen(s->buffer);
+	buffer = (char*)memory_malloc(s->memory, (current_length + 2) * sizeof(char));
 	strcpy(buffer, s->buffer);
-	buffer[currentLength] = c;
+	buffer[current_length] = c;
 	memory_free(s->memory, s->buffer);
 	s->buffer = buffer;
 }

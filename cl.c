@@ -13,7 +13,7 @@ void cl_load(memory_t *memory, char *filename) {
 
 	stream = stream_create(memory, filename);
 	object = read(memory, stream);
-	value = eval(object);
+	value = eval(memory, object);
 	print(value);
 	object_print(object);
 	object_destroy(object);
