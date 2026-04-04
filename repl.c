@@ -4,8 +4,8 @@
 void repl(
 	object_t* (*read_ptr)(void*, memory_t*, stream_t*),
 	void *read_data,
-	value_t* (*eval_ptr)(memory_t *memory, object_t *form),
-	void (*print_ptr)(value_t *value),
+	value_t* (*eval_ptr)(memory_t*, object_t*),
+	void (*print_ptr)(value_t*),
 	memory_t *memory, 
 	stream_t *stream
 ) {
@@ -21,10 +21,12 @@ void repl(
 	object = read_ptr(read_data, memory, stream);
 	while (object->object_type != NIL) {
 		value = eval_ptr(memory, object);
+		print_ptr(value);
+
+		value_destroy(value);
 		object_destroy(object);
 
-		print_ptr(value);
-		value_destroy(value);
+		object = read_ptr(read_data, memory, stream);
 	}
 	object_destroy(object);
 }
