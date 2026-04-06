@@ -69,6 +69,8 @@ void test_repl(memory_t *memory) {
 
 	assert(memory != NULL);
 
+	printf("test_repl : ");
+
 	data.index = 0;
 	data.result[9] = '\0';
 
@@ -79,4 +81,6 @@ void test_repl(memory_t *memory) {
 	}
 
 	assert(strcmp(data.result, "repreprep") == 0);
+
+	printf("PASSED\n");
 }
