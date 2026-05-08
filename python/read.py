@@ -22,17 +22,6 @@ def read_token(stream):
         else:
             assert False
 
-def read_string(stream, x):
-    assert x == '"'
-    result = ""
-    while True:
-        next_character = streams.get_next_character(stream)
-        if next_character == '"':
-            break
-        result += next_character
-    return result
-
-
 def skip_whitespace(stream):
     x = streams.see_next_character(stream)
     while is_whitespace(x):
@@ -44,31 +33,55 @@ def read_s_expression(read, stream, x):
     result = []
     skip_whitespace(stream)
     while streams.see_next_character(stream) != ")":
-        result.append(read(None, stream))
+        result.append(read(stream))
         skip_whitespace(stream)
+    streams.get_next_character(stream)
     return result
 
-def get_reader_macro_function(x):
+def read_string(stream, x):
+    assert x == '"'
+    result = ""
+    while True:
+        next_character = streams.get_next_character(stream)
+        if next_character == '"':
+            break
+        result += next_character
+    return result
+
+def get_reader_macro_function(read, x):
     def _read_s_expression(stream, x):
         return read_s_expression(read, stream, x)
     if x == "(":
         return _read_s_expression
-    elif x == "(":
+    elif x == "\"":
         return read_string
 
-def read(environment, stream):
+def handle_whitespace(read, stream, x):
+    return None
+
+def handle_macro_character(read, stream, x):
+    reader_macro_function = get_reader_macro_function(read, x)
+    reader_macro_result = reader_macro_function(stream, x)
+    if reader_macro_result:
+        return reader_macro_result
+    else:
+        return None
+
+def handle_constituent(read, stream, x):
+    return x + read_token(stream)
+
+def read_dispatch(read, stream, x):
+    if is_whitespace(x):
+        return handle_whitespace(read, stream, x)
+    elif is_macro(x):
+        return handle_macro_character(read, stream, x)
+    elif is_constituent(x):
+        return handle_constituent(read, stream, x)
+
+def read(stream):
     x = streams.get_next_character(stream)
     while x:
-        if is_whitespace(x):
-            continue
-        elif is_macro(x):
-            reader_macro_function = get_reader_macro_function(x)
-            reader_macro_result = reader_macro_function(stream, x)
-            if not reader_macro_result is None:
-                return reader_macro_result
-            else:
-                continue
-        elif is_constituent(x):
-            token = x + read_token(stream)
-            return token
+        result = read_dispatch(read, stream, x)
+        if result:
+            return result
         x = streams.get_next_character(stream)

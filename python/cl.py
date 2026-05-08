@@ -1,3 +1,4 @@
+import evaluate
 import read
 import streams
 import sys
@@ -11,9 +12,11 @@ def main(argv):
 
     contents = get_file_content(filename)
     stream = streams.create(contents)
-    code = read.read(None, stream)
-    while code:
-        print("code =", code)
-        code = read.read(None, stream)
+
+    environment = {}
+    form = read.read(stream)
+    while form:
+        evaluate.evaluate(environment, form)
+        form = read.read(stream)
 
 main(sys.argv)
