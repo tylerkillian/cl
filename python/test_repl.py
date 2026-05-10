@@ -26,7 +26,7 @@ def create_fake_print_():
 def test_repl():
     fake_read = create_fake_read()
     fake_print_, log = create_fake_print_()
-    repl.repl(None, fake_read, fake_eval_, fake_print_)
+    repl.repl(fake_read, fake_eval_, fake_print_)
 
     assert log == ["one", "two", "three"]
 

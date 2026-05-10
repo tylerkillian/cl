@@ -1,20 +1,30 @@
-RULES = {
-    "main": [
-        "read",
-        "eval",
-        "print"
-    ],
-}
+import evaluate
+import read
+import streams
+
+def build_stream(filename):
+    return streams.create_from_file(filename)
+
+def build_environment():
+    return {}
+
+def build_read(stream):
+    def _read():
+        return read.read(stream)
+    return _read
+
+def build_eval_(environment):
+    def _eval_(form):
+        return evaluate.evaluate(environment, form)
+    return _eval_
+
 def build_system(filename):
-    dependencies = {}
+    stream = build_stream(filename)
 
-    contents = get_file_content(filename)
-    stream = streams.create(contents)
+    environment = build_environment()
 
-    environment = {}
-    form = read.read(stream)
-    while form:
-        evaluate.evaluate(environment, form)
-        form = read.read(stream)
+    read = build_read(stream)
+    eval_ = build_eval_(environment)
+    print_ = print
 
     return read, eval_, print_
