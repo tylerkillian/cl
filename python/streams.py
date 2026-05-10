@@ -3,6 +3,11 @@ def create(contents):
         "contents": contents,
     }
 
+def create_from_file(filename):
+    with open(filename) as f:
+        contents = f.read()
+    return create(contents)
+
 def get_next_character(stream):
     if stream["contents"]:
         result = stream["contents"][0]
