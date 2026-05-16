@@ -23,7 +23,7 @@ def create_fake_print_():
         log.append(value)
     return fake_print_, log
 
-def test_repl():
+def run_tests():
     fake_read = create_fake_read()
     fake_print_, log = create_fake_print_()
     repl.repl(fake_read, fake_eval_, fake_print_)

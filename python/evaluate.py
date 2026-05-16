@@ -25,6 +25,10 @@ def evaluate_compound_form(environment, form):
     else:
         assert False
 
-def evaluate(environment, form):
-    if is_cons(form):
-        evaluate_compound_form(environment, form)
+def evaluate(logic, environment, form):
+    if logic["is_symbol"](form):
+        return logic["evaluate_symbol"](environment, form)
+    elif logic["is_cons"](form):
+        return logic["evaluate_compound_form"](environment, form)
+    else:
+        return form
