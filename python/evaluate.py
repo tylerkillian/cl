@@ -17,6 +17,11 @@ def handle_operator(environment, operator_name, cdr):
     assert operator_name == "format"
     print(cdr[1])
 
+def evaluate_macro_form(n, environment, form):
+    macro_function = n.get_macro_function(environment, form)
+    replacement_form = macro_function(form)
+    return n.evaluate_function_form(environment, replacement_form)
+
 def evaluate_compound_form(environment, form):
     car = get_car(form)
     cdr = get_cdr(form)
@@ -25,10 +30,10 @@ def evaluate_compound_form(environment, form):
     else:
         assert False
 
-def evaluate(logic, environment, form):
-    if logic["is_symbol"](form):
-        return logic["evaluate_symbol"](environment, form)
-    elif logic["is_cons"](form):
-        return logic["evaluate_compound_form"](environment, form)
+def evaluate(n, environment, form):
+    if n.is_symbol(form):
+        return n.evaluate_symbol(environment, form)
+    elif n.is_cons(form):
+        return n.evaluate_compound_form(environment, form)
     else:
         return form
