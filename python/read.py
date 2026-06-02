@@ -70,18 +70,21 @@ def handle_macro_character(read, stream, x):
 def handle_constituent(read, stream, x):
     return x + read_token(stream)
 
-def read_dispatch(read, stream, x):
-    if is_whitespace(x):
+def read_dispatch(n, read, stream, x):
+    if n.is_whitespace(x):
         return handle_whitespace(read, stream, x)
-    elif is_macro(x):
+    elif n.is_macro(x):
         return handle_macro_character(read, stream, x)
-    elif is_constituent(x):
+    elif n.is_constituent(x):
         return handle_constituent(read, stream, x)
+    elif not n.is_valid(x):
+        return n.signal("reader-error")
 
-def read(stream):
+def read(n, stream):
     x = streams.get_next_character(stream)
     while x:
-        result = read_dispatch(read, stream, x)
+        result = read_dispatch(n.dispatch, read, stream, x)
         if result:
             return result
         x = streams.get_next_character(stream)
+    return n.handle_end_of_file()
