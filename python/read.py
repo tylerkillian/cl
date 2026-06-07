@@ -83,7 +83,7 @@ def read_dispatch(n, read, stream, x):
 def read(n, stream):
     x = streams.get_next_character(stream)
     while x:
-        result = read_dispatch(n.dispatch, read, stream, x)
+        result = n.read_dispatch(n.dispatch, read, stream, x)
         if result:
             return result
         x = streams.get_next_character(stream)
