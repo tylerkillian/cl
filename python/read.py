@@ -72,11 +72,11 @@ def handle_constituent(read, stream, x):
 
 def read_dispatch(n, read, stream, x):
     if n.is_whitespace(x):
-        return handle_whitespace(read, stream, x)
+        return n.handle_whitespace(read, stream, x)
     elif n.is_macro(x):
-        return handle_macro_character(read, stream, x)
+        return n.handle_macro_character(read, stream, x)
     elif n.is_constituent(x):
-        return handle_constituent(read, stream, x)
+        return n.handle_constituent(read, stream, x)
     elif not n.is_valid(x):
         return n.signal("reader-error")
 
