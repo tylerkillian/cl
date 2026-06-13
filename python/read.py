@@ -75,6 +75,10 @@ def read_dispatch(n, read, stream, x):
         return n.handle_whitespace(read, stream, x)
     elif n.is_macro(x):
         return n.handle_macro_character(read, stream, x)
+    elif n.is_single_escape(x):
+        return n.handle_single_escape(read, stream, x)
+    elif n.is_multiple_escape(x):
+        return n.handle_multiple_escape(read, stream, x)
     elif n.is_constituent(x):
         return n.handle_constituent(read, stream, x)
     elif not n.is_valid(x):
