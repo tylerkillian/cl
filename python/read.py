@@ -70,19 +70,19 @@ def handle_macro_character(read, stream, x):
 def handle_constituent(read, stream, x):
     return x + read_token(stream)
 
-def read_dispatch(n, read, stream, x):
+def read_dispatch(n, state, read, stream, x):
     if n.is_whitespace(x):
-        return n.handle_whitespace(read, stream, x)
+        n.handle_whitespace(state, read, stream, x)
     elif n.is_macro(x):
-        return n.handle_macro_character(read, stream, x)
+        n.handle_macro_character(state, read, stream, x)
     elif n.is_single_escape(x):
-        return n.handle_single_escape(read, stream, x)
+        n.handle_single_escape(state, read, stream, x)
     elif n.is_multiple_escape(x):
-        return n.handle_multiple_escape(read, stream, x)
+        n.handle_multiple_escape(state, read, stream, x)
     elif n.is_constituent(x):
-        return n.handle_constituent(read, stream, x)
+        n.handle_constituent(state, read, stream, x)
     elif not n.is_valid(x):
-        return n.signal("reader-error")
+        n.signal(state, "reader-error")
 
 def read(n, stream):
     x = streams.get_next_character(stream)
