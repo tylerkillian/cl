@@ -10,15 +10,6 @@ def set_signal(state, value):
     state["return"] = None
     state["signal"] = value
 
-def test_read_end_of_file():
-    n = SimpleNamespace(
-        handle_end_of_file=lambda: "eof",
-        read_dispatch=None,
-    )
-    stream = streams.create("")
-    result = read.read(n, stream)
-    assert result == "eof"
-
 def test_read_dispatch_invalid_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
@@ -172,13 +163,39 @@ def test_read_dispatch_constituent_character():
     assert state["return"] == "handle-constituent"
     assert state["signal"] == None
 
+def test_handle_constituent():
+    n = SimpleNamespace(
+        read_token=lambda cl_state, read_token_state, stream: set_return(cl_state, read_token_state["token"]),
+    )
+    state = {}
+    result = read.handle_constituent(n, state, None, None, "A")
+    assert state["return"] == "A"
+    assert state["signal"] == None
+
+def test_read_token():
+    print("IMPLEMENT TESTS FOR read_token()")
+
+def test_read_end_of_file():
+    n = SimpleNamespace(
+        handle_end_of_file=lambda: "eof",
+        read_dispatch=None,
+    )
+    stream = streams.create("")
+    result = read.read(n, stream)
+    assert result == "eof"
+
 def run_tests():
-    test_read_end_of_file()
     test_read_dispatch_invalid_character()
     test_read_dispatch_whitespace_character()
     test_read_dispatch_macro_character()
     test_read_dispatch_single_escape_character()
     test_read_dispatch_multiple_escape_character()
     test_read_dispatch_constituent_character()
+
+    test_handle_constituent()
+
+    test_read_token()
+
+    test_read_end_of_file()
 
     print("test_read : passed")

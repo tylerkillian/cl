@@ -5,22 +5,19 @@ from character import \
     is_terminating_macro, \
     is_whitespace
 
-def read_token(stream):
-    result = ""
+def read_token(n, state, read_token_state, stream):
     while True:
-        if streams.at_end_of_file(stream):
-            return result
+        if read_token_state["status"] == "even":
+            n.read_token_even(state, read_token_state, stream)
+        elif read_token_state["status"] == "odd":
+            n.read_token_odd(state, read_token_state, stream)
 
-        y = streams.get_next_character(stream)
-        if is_constituent(y):
-            result += y
-        elif is_whitespace(y):
-            return result
-        elif is_terminating_macro(y):
-            streams.prepend(stream, y)
-            return result
-        else:
-            assert False
+        if read_token_state["status"] == "error":
+            return
+        elif read_token_state["status"] == "done":
+            break
+
+    n.handle_token_done(state, read_token_state)
 
 def skip_whitespace(stream):
     x = streams.see_next_character(stream)
@@ -67,8 +64,12 @@ def handle_macro_character(read, stream, x):
     else:
         return None
 
-def handle_constituent(read, stream, x):
-    return x + read_token(stream)
+def handle_constituent(n, state, read, stream, x):
+    read_token_state = {
+        "status": "even",
+        "token": x,
+    }
+    n.read_token(state, read_token_state, stream)
 
 def read_dispatch(n, state, read, stream, x):
     if n.is_whitespace(x):
