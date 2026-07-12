@@ -2,6 +2,10 @@ import read
 import streams
 from types import SimpleNamespace
 
+def set_fields(d, fields):
+    for k, v in fields.items():
+        d[k] = v
+
 def set_return(state, value):
     state["return"] = value
     state["signal"] = None
@@ -164,16 +168,29 @@ def test_read_dispatch_constituent_character():
     assert state["signal"] == None
 
 def test_handle_constituent():
-    n = SimpleNamespace(
-        read_token=lambda cl_state, read_token_state, stream: set_return(cl_state, read_token_state["token"]),
-    )
-    state = {}
+    n = SimpleNamespace()
+    state = {
+        "status": "dispatch",
+        "token": ""
+    }
     result = read.handle_constituent(n, state, None, None, "A")
-    assert state["return"] == "A"
-    assert state["signal"] == None
+    assert state["status"] == "read-token-even"
+    assert state["token"] == "A"
 
 def test_read_token():
-    print("IMPLEMENT TESTS FOR read_token()")
+    n = SimpleNamespace(
+        read_token_even=lambda state, stream: set_fields(state, {
+            "status": "read-token-odd"
+        }),
+        read_token_odd=lambda state, stream: set_fields(state, {
+            "status": "done"
+        }),
+    )
+    state = {
+        "status": "read-token-even",
+    }
+    result = read.read_token(n, state, None)
+    assert state["status"] == "done"
 
 def test_read_end_of_file():
     n = SimpleNamespace(

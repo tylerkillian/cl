@@ -5,19 +5,14 @@ from character import \
     is_terminating_macro, \
     is_whitespace
 
-def read_token(n, state, read_token_state, stream):
+def read_token(n, state, stream):
     while True:
-        if read_token_state["status"] == "even":
-            n.read_token_even(state, read_token_state, stream)
-        elif read_token_state["status"] == "odd":
-            n.read_token_odd(state, read_token_state, stream)
-
-        if read_token_state["status"] == "error":
+        if state["status"] == "read-token-even":
+            n.read_token_even(state, stream)
+        elif state["status"] == "read-token-odd":
+            n.read_token_odd(state, stream)
+        else:
             return
-        elif read_token_state["status"] == "done":
-            break
-
-    n.handle_token_done(state, read_token_state)
 
 def skip_whitespace(stream):
     x = streams.see_next_character(stream)
@@ -65,11 +60,8 @@ def handle_macro_character(read, stream, x):
         return None
 
 def handle_constituent(n, state, read, stream, x):
-    read_token_state = {
-        "status": "even",
-        "token": x,
-    }
-    n.read_token(state, read_token_state, stream)
+    state["status"] = "read-token-even"
+    state["token"] = x
 
 def read_dispatch(n, state, read, stream, x):
     if n.is_whitespace(x):
@@ -86,10 +78,15 @@ def read_dispatch(n, state, read, stream, x):
         n.signal(state, "reader-error")
 
 def read(n, stream):
+    # dispatch on x
     x = streams.get_next_character(stream)
     while x:
         result = n.read_dispatch(n.dispatch, read, stream, x)
         if result:
             return result
         x = streams.get_next_character(stream)
+
+    # dispatch on y / accumulate token (if not at eof and no error signaled)
+
+    # return signal or object
     return n.handle_end_of_file()
