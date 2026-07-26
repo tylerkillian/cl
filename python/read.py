@@ -77,16 +77,18 @@ def read_dispatch(n, state, read, stream, x):
     elif not n.is_valid(x):
         n.signal(state, "reader-error")
 
-def read(n, stream):
-    # dispatch on x
+def read(n, state, stream):
     x = streams.get_next_character(stream)
     while x:
-        result = n.read_dispatch(n.dispatch, read, stream, x)
-        if result:
-            return result
+        n.read_dispatch(n.dispatch, state, read, stream, x)
+        if state["result"] or state["signal"]:
+            return
+        elif state["status"] != "read":
+            break
         x = streams.get_next_character(stream)
 
-    # dispatch on y / accumulate token (if not at eof and no error signaled)
-
-    # return signal or object
-    return n.handle_end_of_file()
+    if state["status"] == "read-token-even" or state["status"] == "read-token-odd":
+        read_token(n.read_token, state, stream)
+        return
+    else:
+        return n.handle_end_of_file()

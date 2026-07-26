@@ -197,8 +197,13 @@ def test_read_end_of_file():
         handle_end_of_file=lambda: "eof",
         read_dispatch=None,
     )
+    state = {
+        "return": None,
+        "signal": None,
+        "status": "read",
+    }
     stream = streams.create("")
-    result = read.read(n, stream)
+    result = read.read(n, state, stream)
     assert result == "eof"
 
 def run_tests():
