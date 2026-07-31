@@ -14,6 +14,14 @@ def set_signal(state, value):
     state["return"] = None
     state["signal"] = value
 
+def fake_read_token_dispatch(state, current, stream, y):
+    current["token"] += y
+    if current["status"] == "even":
+        current["status"] = "odd"
+        return
+    else:
+        return current["token"]
+
 def test_read_dispatch_invalid_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
@@ -168,29 +176,23 @@ def test_read_dispatch_constituent_character():
     assert state["signal"] == None
 
 def test_handle_constituent():
-    n = SimpleNamespace()
-    state = {
-        "status": "dispatch",
-        "token": ""
-    }
+    n = SimpleNamespace(
+        read_token=lambda state, initial_status, stream, x: x + "BC"
+    )
+    state = {}
     result = read.handle_constituent(n, state, None, None, "A")
-    assert state["status"] == "read-token-even"
-    assert state["token"] == "A"
+    assert result == "ABC"
 
 def test_read_token():
     n = SimpleNamespace(
-        read_token_even=lambda state, stream: set_fields(state, {
-            "status": "read-token-odd"
-        }),
-        read_token_odd=lambda state, stream: set_fields(state, {
-            "status": "done"
-        }),
+        read_token_dispatch=fake_read_token_dispatch,
     )
     state = {
-        "status": "read-token-even",
+        "signal": None
     }
-    result = read.read_token(n, state, None)
-    assert state["status"] == "done"
+    stream = streams.create("BC")
+    result = read.read_token(n, state, "even", stream, "A")
+    result == "ABC"
 
 def test_read_end_of_file():
     n = SimpleNamespace(

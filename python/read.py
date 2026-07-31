@@ -5,14 +5,27 @@ from character import \
     is_terminating_macro, \
     is_whitespace
 
-def read_token(n, state, stream):
-    while True:
-        if state["status"] == "read-token-even":
-            n.read_token_even(state, stream)
-        elif state["status"] == "read-token-odd":
-            n.read_token_odd(state, stream)
-        else:
+# CREATE TESTS FOR THIS
+def read_token_dispatch(n, state, current, stream, y):
+    if current["status"] == "even":
+        n.read_token_even(state, current, y)
+    else:
+        n.read_token_odd(state, current, y)
+
+def read_token(n, state, initial_status, stream, first_character):
+    current = {
+        "status": initial_status,
+        "token": first_character
+    }
+    y = streams.get_next_character(stream)
+    while y:
+        result = n.read_token_dispatch(state, current, stream, y)
+        if result:
+            return result
+        if state["signal"]:
             return
+        y = streams.get_next_character(stream)
+    return n.handle_end_of_file()
 
 def skip_whitespace(stream):
     x = streams.see_next_character(stream)
@@ -62,33 +75,31 @@ def handle_macro_character(read, stream, x):
 def handle_constituent(n, state, read, stream, x):
     state["status"] = "read-token-even"
     state["token"] = x
+    return n.read_token(state, "even", stream, x)
 
 def read_dispatch(n, state, read, stream, x):
     if n.is_whitespace(x):
-        n.handle_whitespace(state, read, stream, x)
+        return n.handle_whitespace(state, read, stream, x)
     elif n.is_macro(x):
-        n.handle_macro_character(state, read, stream, x)
+        return n.handle_macro_character(state, read, stream, x)
     elif n.is_single_escape(x):
-        n.handle_single_escape(state, read, stream, x)
+        return n.handle_single_escape(state, read, stream, x)
     elif n.is_multiple_escape(x):
-        n.handle_multiple_escape(state, read, stream, x)
+        return n.handle_multiple_escape(state, read, stream, x)
     elif n.is_constituent(x):
-        n.handle_constituent(state, read, stream, x)
+        return n.handle_constituent(state, read, stream, x)
     elif not n.is_valid(x):
         n.signal(state, "reader-error")
+        return
 
 def read(n, state, stream):
     x = streams.get_next_character(stream)
     while x:
-        n.read_dispatch(n.dispatch, state, read, stream, x)
-        if state["result"] or state["signal"]:
+        result = n.read_dispatch(n.dispatch, state, read, stream, x)
+        if result:
+            return result
+        if state["signal"]:
             return
-        elif state["status"] != "read":
-            break
         x = streams.get_next_character(stream)
+    return n.handle_end_of_file()
 
-    if state["status"] == "read-token-even" or state["status"] == "read-token-odd":
-        read_token(n.read_token, state, stream)
-        return
-    else:
-        return n.handle_end_of_file()
