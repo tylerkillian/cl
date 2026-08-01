@@ -95,7 +95,7 @@ def read_dispatch(n, state, read, stream, x):
 def read(n, state, stream):
     x = streams.get_next_character(stream)
     while x:
-        result = n.read_dispatch(n.dispatch, state, read, stream, x)
+        result = n.read_dispatch(state, read, stream, x)
         if result:
             return result
         if state["signal"]:

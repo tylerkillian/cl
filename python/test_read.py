@@ -22,6 +22,19 @@ def fake_read_token_dispatch(state, current, stream, y):
     else:
         return current["token"]
 
+def create_fake_read_dispatch(save_inputs):
+    def result(state, read, stream, x):
+        assert len(x) == 1
+        save_inputs.append(x)
+        if x == "R":
+            return "".join(save_inputs)
+        elif x == "S":
+            state["signal"] = "fake-signal"
+            return
+        else:
+            return
+    return result
+
 def test_read_dispatch_invalid_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
@@ -208,6 +221,39 @@ def test_read_end_of_file():
     result = read.read(n, state, stream)
     assert result == "eof"
 
+def test_read_return_value():
+    save_inputs = []
+    n = SimpleNamespace(
+        handle_end_of_file=lambda: "eof",
+        read_dispatch=create_fake_read_dispatch(save_inputs),
+    )
+    state = {
+        "return": None,
+        "signal": None,
+        "status": "read",
+    }
+    stream = streams.create("abcR")
+    result = read.read(n, state, stream)
+    assert save_inputs == ["a", "b", "c", "R"]
+    assert result == "abcR"
+
+def test_read_signal():
+    save_inputs = []
+    n = SimpleNamespace(
+        handle_end_of_file=lambda: "eof",
+        read_dispatch=create_fake_read_dispatch(save_inputs),
+    )
+    state = {
+        "return": None,
+        "signal": None,
+        "status": "read",
+    }
+    stream = streams.create("abcSxyz")
+    result = read.read(n, state, stream)
+    assert save_inputs == ["a", "b", "c", "S"]
+    assert not result
+    assert state["signal"] == "fake-signal"
+
 def run_tests():
     test_read_dispatch_invalid_character()
     test_read_dispatch_whitespace_character()
@@ -221,5 +267,7 @@ def run_tests():
     test_read_token()
 
     test_read_end_of_file()
+    test_read_return_value()
+    test_read_signal()
 
     print("test_read : passed")
