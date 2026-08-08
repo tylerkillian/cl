@@ -83,7 +83,10 @@ def test_read_dispatch_whitespace_character():
         is_valid=lambda x: False,
         signal=lambda state, s: set_signal(state, s),
     )
-    state = {}
+    state = {
+        "return": None,
+        "signal": None
+    }
     result = read.read_dispatch(n, state, None, None, "")
     assert state["return"] == "handle-whitespace"
     assert state["signal"] == None
@@ -224,7 +227,7 @@ def test_read_end_of_file():
 def test_read_return_value():
     save_inputs = []
     n = SimpleNamespace(
-        handle_end_of_file=lambda: "eof",
+        handle_end_of_file=None,
         read_dispatch=create_fake_read_dispatch(save_inputs),
     )
     state = {
@@ -240,7 +243,7 @@ def test_read_return_value():
 def test_read_signal():
     save_inputs = []
     n = SimpleNamespace(
-        handle_end_of_file=lambda: "eof",
+        handle_end_of_file=None,
         read_dispatch=create_fake_read_dispatch(save_inputs),
     )
     state = {
