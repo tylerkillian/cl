@@ -6,19 +6,14 @@ def set_fields(d, fields):
     for k, v in fields.items():
         d[k] = v
 
-def set_return(state, value):
-    state["return"] = value
-    state["signal"] = None
-
 def set_signal(state, value):
-    state["return"] = None
     state["signal"] = value
 
 def fake_read_token_dispatch(state, current, stream, y):
     current["token"] += y
     if current["status"] == "even":
         current["status"] = "odd"
-        return
+        return None
     else:
         return current["token"]
 
@@ -30,166 +25,152 @@ def create_fake_read_dispatch(save_inputs):
             return "".join(save_inputs)
         elif x == "S":
             state["signal"] = "fake-signal"
-            return
+            return None
         else:
-            return
+            return None
     return result
 
 def test_read_dispatch_invalid_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: set_return(state, "handle-whitespace"),
+        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
-        handle_macro_character=lambda state, read, stream, x: set_return(state, "handle-macro"),
+        handle_macro_character=lambda state, read, stream, x: "handle-macro",
 
         is_single_escape=lambda x: False,
-        handle_single_escape=lambda state, read, stream, x: set_return(state, "handle-single-escape"),
+        handle_single_escape=lambda state, read, stream, x: "handle-single-escape",
 
         is_multiple_escape=lambda x: False,
-        handle_multiple_escape=lambda state, read, stream, x: set_return(state, "handle-multiple-escape"),
+        handle_multiple_escape=lambda state, read, stream, x: "handle-multiple-escape",
 
         is_constituent=lambda x: False,
-        handle_constituent=lambda state, read, stream, x: set_return(state, "handle-constituent"),
+        handle_constituent=lambda state, read, stream, x: "handle-constituent",
 
         is_valid=lambda x: False,
-        signal=lambda state, s: set_signal(state, s),
+        signal=set_signal,
     )
     state = {
-        "return": None,
         "signal": None
     }
-    read.read_dispatch(n, state, None, None, "")
-    assert state["return"] == None
+    result = read.read_dispatch(n, state, None, None, "")
+    assert result == None
     assert state["signal"] == "reader-error"
 
 def test_read_dispatch_whitespace_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: True,
-        handle_whitespace=lambda state, read, stream, x: set_return(state, "handle-whitespace"),
+        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
-        handle_macro_character=lambda state, read, stream, x: set_return(state, "handle-macro"),
+        handle_macro_character=lambda state, read, stream, x: "handle-macro",
 
         is_single_escape=lambda x: False,
-        handle_single_escape=lambda state, read, stream, x: set_return(state, "handle-single-escape"),
+        handle_single_escape=lambda state, read, stream, x: "handle-single-escape",
 
         is_multiple_escape=lambda x: False,
-        handle_multiple_escape=lambda state, read, stream, x: set_return(state, "handle-multiple-escape"),
+        handle_multiple_escape=lambda state, read, stream, x: "handle-multiple-escape",
 
         is_constituent=lambda x: False,
-        handle_constituent=lambda state, read, stream, x: set_return(state, "handle-constituent"),
+        handle_constituent=lambda state, read, stream, x: "handle-constituent",
 
         is_valid=lambda x: False,
-        signal=lambda state, s: set_signal(state, s),
+        signal=set_signal,
     )
-    state = {
-        "return": None,
-        "signal": None
-    }
-    result = read.read_dispatch(n, state, None, None, "")
-    assert state["return"] == "handle-whitespace"
-    assert state["signal"] == None
+    result = read.read_dispatch(n, None, None, None, "")
+    assert result == "handle-whitespace"
 
 def test_read_dispatch_macro_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: set_return(state, "handle-whitespace"),
+        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: True,
-        handle_macro_character=lambda state, read, stream, x: set_return(state, "handle-macro"),
+        handle_macro_character=lambda state, read, stream, x: "handle-macro",
 
         is_single_escape=lambda x: False,
-        handle_single_escape=lambda state, read, stream, x: set_return(state, "handle-single-escape"),
+        handle_single_escape=lambda state, read, stream, x: "handle-single-escape",
 
         is_multiple_escape=lambda x: False,
-        handle_multiple_escape=lambda state, read, stream, x: set_return(state, "handle-multiple-escape"),
+        handle_multiple_escape=lambda state, read, stream, x: "handle-multiple-escape",
 
         is_constituent=lambda x: False,
-        handle_constituent=lambda state, read, stream, x: set_return(state, "handle-constituent"),
+        handle_constituent=lambda state, read, stream, x: "handle-constituent",
 
         is_valid=lambda x: False,
-        signal=lambda state, s: set_signal(state, s),
+        signal=set_signal,
     )
-    state = {}
-    result = read.read_dispatch(n, state, None, None, "")
-    assert state["return"] == "handle-macro"
-    assert state["signal"] == None
+    result = read.read_dispatch(n, None, None, None, "")
+    assert result == "handle-macro"
 
 def test_read_dispatch_single_escape_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: set_return(state, "handle-whitespace"),
+        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
-        handle_macro_character=lambda state, read, stream, x: set_return(state, "handle-macro"),
+        handle_macro_character=lambda state, read, stream, x: "handle-macro",
 
         is_single_escape=lambda x: True,
-        handle_single_escape=lambda state, read, stream, x: set_return(state, "handle-single-escape"),
+        handle_single_escape=lambda state, read, stream, x: "handle-single-escape",
 
         is_multiple_escape=lambda x: False,
-        handle_multiple_escape=lambda state, read, stream, x: set_return(state, "handle-multiple-escape"),
+        handle_multiple_escape=lambda state, read, stream, x: "handle-multiple-escape",
 
         is_constituent=lambda x: False,
-        handle_constituent=lambda state, read, stream, x: set_return(state, "handle-constituent"),
+        handle_constituent=lambda state, read, stream, x: "handle-constituent",
 
         is_valid=lambda x: False,
-        signal=lambda state, s: set_signal(state, s),
+        signal=set_signal,
     )
-    state = {}
-    result = read.read_dispatch(n, state, None, None, "")
-    assert state["return"] == "handle-single-escape"
-    assert state["signal"] == None
+    result = read.read_dispatch(n, None, None, None, "")
+    assert result == "handle-single-escape"
 
 def test_read_dispatch_multiple_escape_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: set_return(state, "handle-whitespace"),
+        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
-        handle_macro_character=lambda state, read, stream, x: set_return(state, "handle-macro"),
+        handle_macro_character=lambda state, read, stream, x: "handle-macro",
 
         is_single_escape=lambda x: False,
-        handle_single_escape=lambda state, read, stream, x: set_return(state, "handle-single-escape"),
+        handle_single_escape=lambda state, read, stream, x: "handle-single-escape",
 
         is_multiple_escape=lambda x: True,
-        handle_multiple_escape=lambda state, read, stream, x: set_return(state, "handle-multiple-escape"),
+        handle_multiple_escape=lambda state, read, stream, x: "handle-multiple-escape",
 
         is_constituent=lambda x: False,
-        handle_constituent=lambda state, read, stream, x: set_return(state, "handle-constituent"),
+        handle_constituent=lambda state, read, stream, x: "handle-constituent",
 
         is_valid=lambda x: False,
-        signal=lambda state, s: set_signal(state, s),
+        signal=set_signal,
     )
-    state = {}
-    result = read.read_dispatch(n, state, None, None, "")
-    assert state["return"] == "handle-multiple-escape"
-    assert state["signal"] == None
+    result = read.read_dispatch(n, None, None, None, "")
+    assert result == "handle-multiple-escape"
 
 def test_read_dispatch_constituent_character():
     n = SimpleNamespace(
         is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: set_return(state, "handle-whitespace"),
+        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
-        handle_macro_character=lambda state, read, stream, x: set_return(state, "handle-macro"),
+        handle_macro_character=lambda state, read, stream, x: "handle-macro",
 
         is_single_escape=lambda x: False,
-        handle_single_escape=lambda state, read, stream, x: set_return(state, "handle-single-escape"),
+        handle_single_escape=lambda state, read, stream, x: "handle-single-escape",
 
         is_multiple_escape=lambda x: False,
-        handle_multiple_escape=lambda state, read, stream, x: set_return(state, "handle-multiple-escape"),
+        handle_multiple_escape=lambda state, read, stream, x: "handle-multiple-escape",
 
         is_constituent=lambda x: True,
-        handle_constituent=lambda state, read, stream, x: set_return(state, "handle-constituent"),
+        handle_constituent=lambda state, read, stream, x: "handle-constituent",
 
         is_valid=lambda x: False,
-        signal=lambda state, s: set_signal(state, s),
+        signal=set_signal,
     )
-    state = {}
-    result = read.read_dispatch(n, state, None, None, "")
-    assert state["return"] == "handle-constituent"
-    assert state["signal"] == None
+    result = read.read_dispatch(n, None, None, None, "")
+    assert result == "handle-constituent"
 
 def test_handle_constituent():
     n = SimpleNamespace(
@@ -215,13 +196,8 @@ def test_read_end_of_file():
         handle_end_of_file=lambda: "eof",
         read_dispatch=None,
     )
-    state = {
-        "return": None,
-        "signal": None,
-        "status": "read",
-    }
     stream = streams.create("")
-    result = read.read(n, state, stream)
+    result = read.read(n, None, stream)
     assert result == "eof"
 
 def test_read_return_value():
@@ -231,7 +207,6 @@ def test_read_return_value():
         read_dispatch=create_fake_read_dispatch(save_inputs),
     )
     state = {
-        "return": None,
         "signal": None,
         "status": "read",
     }
@@ -239,6 +214,7 @@ def test_read_return_value():
     result = read.read(n, state, stream)
     assert save_inputs == ["a", "b", "c", "R"]
     assert result == "abcR"
+    assert state["signal"] == None
 
 def test_read_signal():
     save_inputs = []
@@ -247,7 +223,6 @@ def test_read_signal():
         read_dispatch=create_fake_read_dispatch(save_inputs),
     )
     state = {
-        "return": None,
         "signal": None,
         "status": "read",
     }

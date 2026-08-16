@@ -23,7 +23,7 @@ def read_token(n, state, initial_status, stream, first_character):
         if result:
             return result
         if state["signal"]:
-            return
+            return None
         y = streams.get_next_character(stream)
     return n.handle_end_of_file()
 
@@ -90,7 +90,7 @@ def read_dispatch(n, state, read, stream, x):
         return n.handle_constituent(state, read, stream, x)
     elif not n.is_valid(x):
         n.signal(state, "reader-error")
-        return
+        return None
 
 def read(n, state, stream):
     x = streams.get_next_character(stream)
@@ -99,7 +99,7 @@ def read(n, state, stream):
         if result:
             return result
         if state["signal"]:
-            return
+            return None
         x = streams.get_next_character(stream)
     return n.handle_end_of_file()
 
