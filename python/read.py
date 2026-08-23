@@ -61,16 +61,12 @@ def get_reader_macro_function(read, x):
     elif x == "\"":
         return read_string
 
-def handle_whitespace(read, stream, x):
+def handle_whitespace(n, state, read, stream, x):
     return None
 
-def handle_macro_character(read, stream, x):
-    reader_macro_function = get_reader_macro_function(read, x)
-    reader_macro_result = reader_macro_function(stream, x)
-    if reader_macro_result:
-        return reader_macro_result
-    else:
-        return None
+def handle_macro_character(n, state, read, stream, x):
+    reader_macro_function = n.get_reader_macro_function(read, x)
+    return reader_macro_function(stream, x)
 
 def handle_constituent(n, state, read, stream, x):
     state["status"] = "read-token-even"

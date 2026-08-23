@@ -172,6 +172,17 @@ def test_read_dispatch_constituent_character():
     result = read.read_dispatch(n, None, None, None, "")
     assert result == "handle-constituent"
 
+def test_handle_whitespace():
+    result = read.handle_whitespace(None, None, None, None, None)
+    assert result == None
+
+def test_handle_macro_character():
+    n = SimpleNamespace(
+            get_reader_macro_function=lambda read, x: (lambda stream, x: "macro-result-" + x)
+    )
+    result = read.handle_macro_character(n, None, None, None, "|")
+    assert result == "macro-result-|"
+
 def test_handle_constituent():
     n = SimpleNamespace(
         read_token=lambda state, initial_status, stream, x: x + "BC"
@@ -240,6 +251,9 @@ def run_tests():
     test_read_dispatch_multiple_escape_character()
     test_read_dispatch_constituent_character()
 
+    test_handle_whitespace()
+    test_handle_macro_character()
+#    test_handle_single_escape()
     test_handle_constituent()
 
     test_read_token()
