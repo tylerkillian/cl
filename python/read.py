@@ -68,8 +68,16 @@ def handle_macro_character(n, state, read, stream, x):
     reader_macro_function = n.get_reader_macro_function(read, x)
     return reader_macro_function(stream, x)
 
-def handle_constituent(n, state, read, stream, x):
-    state["status"] = "read-token-even"
+def handle_single_escape_character(n, state, read, stream, x):
+    y = streams.get_next_character(stream)
+    if not y:
+        n.signal(state, "end-of-file")
+        return None
+
+    state["token"] = y
+    return n.read_token(state, "even", stream, y)
+
+def handle_constituent_character(n, state, read, stream, x):
     state["token"] = x
     return n.read_token(state, "even", stream, x)
 
@@ -98,4 +106,3 @@ def read(n, state, stream):
             return None
         x = streams.get_next_character(stream)
     return n.handle_end_of_file()
-

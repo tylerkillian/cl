@@ -178,17 +178,39 @@ def test_handle_whitespace():
 
 def test_handle_macro_character():
     n = SimpleNamespace(
-            get_reader_macro_function=lambda read, x: (lambda stream, x: "macro-result-" + x)
+        get_reader_macro_function=lambda read, x: (lambda stream, x: "macro-result-" + x)
     )
     result = read.handle_macro_character(n, None, None, None, "|")
     assert result == "macro-result-|"
 
-def test_handle_constituent():
+def test_handle_single_escape_character():
+    n = SimpleNamespace(
+        signal=set_signal,
+        read_token=lambda state, initial_status, stream, x: x + "BC"
+    )
+
+    state = {
+        "signal": None
+    }
+    stream = streams.create("")
+    result = read.handle_single_escape_character(n, state, None, stream, "'")
+    assert result == None
+    assert state["signal"] == "end-of-file"
+
+    state = {
+        "signal": None
+    }
+    stream = streams.create("A")
+    result = read.handle_single_escape_character(n, state, None, stream, "'")
+    assert result == "ABC"
+    assert state["signal"] == None
+
+def test_handle_constituent_character():
     n = SimpleNamespace(
         read_token=lambda state, initial_status, stream, x: x + "BC"
     )
     state = {}
-    result = read.handle_constituent(n, state, None, None, "A")
+    result = read.handle_constituent_character(n, state, None, None, "A")
     assert result == "ABC"
 
 def test_read_token():
@@ -253,8 +275,8 @@ def run_tests():
 
     test_handle_whitespace()
     test_handle_macro_character()
-#    test_handle_single_escape()
-    test_handle_constituent()
+    test_handle_single_escape_character()
+    test_handle_constituent_character()
 
     test_read_token()
 
