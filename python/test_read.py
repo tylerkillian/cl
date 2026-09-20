@@ -205,12 +205,19 @@ def test_handle_single_escape_character():
     assert result == "ABC"
     assert state["signal"] == None
 
+def test_handle_multiple_escape_character():
+    n = SimpleNamespace(
+        read_token=lambda state, initial_status, stream, x: "ABC"
+    )
+
+    result = read.handle_multiple_escape_character(n, None, None, None, "|")
+    assert result == "ABC"
+
 def test_handle_constituent_character():
     n = SimpleNamespace(
         read_token=lambda state, initial_status, stream, x: x + "BC"
     )
-    state = {}
-    result = read.handle_constituent_character(n, state, None, None, "A")
+    result = read.handle_constituent_character(n, None, None, None, "A")
     assert result == "ABC"
 
 def test_read_token():
@@ -240,8 +247,7 @@ def test_read_return_value():
         read_dispatch=create_fake_read_dispatch(save_inputs),
     )
     state = {
-        "signal": None,
-        "status": "read",
+        "signal": None
     }
     stream = streams.create("abcR")
     result = read.read(n, state, stream)
@@ -256,8 +262,7 @@ def test_read_signal():
         read_dispatch=create_fake_read_dispatch(save_inputs),
     )
     state = {
-        "signal": None,
-        "status": "read",
+        "signal": None
     }
     stream = streams.create("abcSxyz")
     result = read.read(n, state, stream)
@@ -276,6 +281,7 @@ def run_tests():
     test_handle_whitespace()
     test_handle_macro_character()
     test_handle_single_escape_character()
+    test_handle_multiple_escape_character()
     test_handle_constituent_character()
 
     test_read_token()

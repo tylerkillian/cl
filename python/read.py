@@ -12,10 +12,10 @@ def read_token_dispatch(n, state, current, stream, y):
     else:
         n.read_token_odd(state, current, y)
 
-def read_token(n, state, initial_status, stream, first_character):
+def read_token(n, state, initial_status, stream, token_initializer):
     current = {
         "status": initial_status,
-        "token": first_character
+        "token": token_initializer
     }
     y = streams.get_next_character(stream)
     while y:
@@ -74,11 +74,12 @@ def handle_single_escape_character(n, state, read, stream, x):
         n.signal(state, "end-of-file")
         return None
 
-    state["token"] = y
     return n.read_token(state, "even", stream, y)
 
+def handle_multiple_escape_character(n, state, read, stream, x):
+    return n.read_token(state, "odd", stream, "")
+
 def handle_constituent_character(n, state, read, stream, x):
-    state["token"] = x
     return n.read_token(state, "even", stream, x)
 
 def read_dispatch(n, state, read, stream, x):
