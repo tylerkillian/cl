@@ -231,6 +231,14 @@ def test_read_token():
     result = read.read_token(n, state, "even", stream, "A")
     result == "ABC"
 
+def test_read_token_even_dispatch_constituent_or_nonterminating_macro_character():
+    n = SimpleNamespace(
+        is_constituent_or_nonterminating_macro_character=lambda x: True,
+        handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+    )
+    result = read.read_token_even_dispatch(n, None, None, None, None, "")
+    assert result == "handle-constituent-or-nonterminating-macro"
+
 def test_read_end_of_file():
     n = SimpleNamespace(
         handle_end_of_file=lambda: "eof",
@@ -285,6 +293,9 @@ def run_tests():
     test_handle_constituent_character()
 
     test_read_token()
+    test_read_token_even_dispatch_constituent_or_nonterminating_macro_character()
+
+    # create tests for read_token_{even,odd} handlers
 
     test_read_end_of_file()
     test_read_return_value()

@@ -3,14 +3,30 @@ from character import \
     is_constituent, \
     is_macro, \
     is_terminating_macro, \
+    is_nonterminating_macro, \
     is_whitespace
+
+def read_token_even_dispatch(n, state, current, read, stream, y):
+    if n.is_constituent_or_nonterminating_macro_character(y):
+        return n.handle_constituent_or_nonterminating_macro_character(state, current, read, stream, y)
+    elif n.is_macro(x):
+        return n.handle_macro_character(state, read, stream, x)
+    elif n.is_single_escape(x):
+        return n.handle_single_escape(state, read, stream, x)
+    elif n.is_multiple_escape(x):
+        return n.handle_multiple_escape(state, read, stream, x)
+    elif n.is_constituent(x):
+        return n.handle_constituent(state, read, stream, x)
+    elif not n.is_valid(x):
+        n.signal(state, "reader-error")
+        return None
 
 # CREATE TESTS FOR THIS
 def read_token_dispatch(n, state, current, stream, y):
     if current["status"] == "even":
-        n.read_token_even(state, current, y)
+        return n.read_token_even_dispatch(state, current, y)
     else:
-        n.read_token_odd(state, current, y)
+        return n.read_token_odd_dispatch(state, current, y)
 
 def read_token(n, state, initial_status, stream, token_initializer):
     current = {
@@ -73,7 +89,6 @@ def handle_single_escape_character(n, state, read, stream, x):
     if not y:
         n.signal(state, "end-of-file")
         return None
-
     return n.read_token(state, "even", stream, y)
 
 def handle_multiple_escape_character(n, state, read, stream, x):
