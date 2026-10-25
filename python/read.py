@@ -4,22 +4,22 @@ from character import \
     is_macro, \
     is_terminating_macro, \
     is_nonterminating_macro, \
-    is_whitespace
+    is_whitespace_character
 
 def read_token_even_dispatch(n, state, current, read, stream, y):
     if n.is_constituent_or_nonterminating_macro_character(y):
         return n.handle_constituent_or_nonterminating_macro_character(state, current, read, stream, y)
-    elif n.is_macro(x):
-        return n.handle_macro_character(state, read, stream, x)
-    elif n.is_single_escape(x):
-        return n.handle_single_escape(state, read, stream, x)
-    elif n.is_multiple_escape(x):
-        return n.handle_multiple_escape(state, read, stream, x)
-    elif n.is_constituent(x):
-        return n.handle_constituent(state, read, stream, x)
-    elif not n.is_valid(x):
+    elif n.is_single_escape_character(y):
+        return n.handle_single_escape_character(state, current, read, stream, y)
+    elif n.is_multiple_escape_character(y):
+        return n.handle_multiple_escape_character(state, current, read, stream, y)
+    elif not n.is_valid_character(y):
         n.signal(state, "reader-error")
         return None
+    elif n.is_terminating_macro_character(y):
+        return n.handle_terminating_macro_character(state, current, read, stream, y)
+    elif n.is_whitespace_character(y):
+        return n.handle_whitespace_character(state, current, read, stream, y)
 
 # CREATE TESTS FOR THIS
 def read_token_dispatch(n, state, current, stream, y):
@@ -45,7 +45,7 @@ def read_token(n, state, initial_status, stream, token_initializer):
 
 def skip_whitespace(stream):
     x = streams.see_next_character(stream)
-    while is_whitespace(x):
+    while is_whitespace_character(x):
         streams.get_next_character(stream)
         x = streams.see_next_character(stream)
 
@@ -98,8 +98,8 @@ def handle_constituent_character(n, state, read, stream, x):
     return n.read_token(state, "even", stream, x)
 
 def read_dispatch(n, state, read, stream, x):
-    if n.is_whitespace(x):
-        return n.handle_whitespace(state, read, stream, x)
+    if n.is_whitespace_character(x):
+        return n.handle_whitespace_character(state, read, stream, x)
     elif n.is_macro(x):
         return n.handle_macro_character(state, read, stream, x)
     elif n.is_single_escape(x):

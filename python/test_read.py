@@ -32,8 +32,8 @@ def create_fake_read_dispatch(save_inputs):
 
 def test_read_dispatch_invalid_character():
     n = SimpleNamespace(
-        is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
         handle_macro_character=lambda state, read, stream, x: "handle-macro",
@@ -59,8 +59,8 @@ def test_read_dispatch_invalid_character():
 
 def test_read_dispatch_whitespace_character():
     n = SimpleNamespace(
-        is_whitespace=lambda x: True,
-        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
+        is_whitespace_character=lambda x: True,
+        handle_whitespace_character=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
         handle_macro_character=lambda state, read, stream, x: "handle-macro",
@@ -82,8 +82,8 @@ def test_read_dispatch_whitespace_character():
 
 def test_read_dispatch_macro_character():
     n = SimpleNamespace(
-        is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: True,
         handle_macro_character=lambda state, read, stream, x: "handle-macro",
@@ -105,8 +105,8 @@ def test_read_dispatch_macro_character():
 
 def test_read_dispatch_single_escape_character():
     n = SimpleNamespace(
-        is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
         handle_macro_character=lambda state, read, stream, x: "handle-macro",
@@ -128,8 +128,8 @@ def test_read_dispatch_single_escape_character():
 
 def test_read_dispatch_multiple_escape_character():
     n = SimpleNamespace(
-        is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
         handle_macro_character=lambda state, read, stream, x: "handle-macro",
@@ -151,8 +151,8 @@ def test_read_dispatch_multiple_escape_character():
 
 def test_read_dispatch_constituent_character():
     n = SimpleNamespace(
-        is_whitespace=lambda x: False,
-        handle_whitespace=lambda state, read, stream, x: "handle-whitespace",
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, read, stream, x: "handle-whitespace",
 
         is_macro=lambda x: False,
         handle_macro_character=lambda state, read, stream, x: "handle-macro",
@@ -235,9 +235,143 @@ def test_read_token_even_dispatch_constituent_or_nonterminating_macro_character(
     n = SimpleNamespace(
         is_constituent_or_nonterminating_macro_character=lambda x: True,
         handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+
+        is_single_escape_character=lambda x: False,
+        handle_single_escape_character=lambda state, read, stream, x: "handle-single-escape",
+
+        is_multiple_escape_character=lambda x: False,
+        handle_multiple_escape_character=lambda state, current, read, stream, x: "handle-multiple-escape",
+
+        is_valid_character=lambda x: True,
+        signal=set_signal,
+
+        is_terminating_macro_character=lambda x: False,
+        handle_terminating_macro_character=lambda state, current, read, stream, x: "handle-terminating-macro",
+
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, current, read, stream, x: "handle-whitespace"
     )
     result = read.read_token_even_dispatch(n, None, None, None, None, "")
     assert result == "handle-constituent-or-nonterminating-macro"
+
+def test_read_token_even_dispatch_single_escape_character():
+    n = SimpleNamespace(
+        is_constituent_or_nonterminating_macro_character=lambda x: False,
+        handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+
+        is_single_escape_character=lambda x: True,
+        handle_single_escape_character=lambda state, current, read, stream, x: "handle-single-escape",
+
+        is_multiple_escape_character=lambda x: False,
+        handle_multiple_escape_character=lambda state, current, read, stream, x: "handle-multiple-escape",
+
+        is_valid_character=lambda x: True,
+        signal=set_signal,
+
+        is_terminating_macro_character=lambda x: False,
+        handle_terminating_macro_character=lambda state, current, read, stream, x: "handle-terminating-macro",
+
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, current, read, stream, x: "handle-whitespace"
+    )
+    result = read.read_token_even_dispatch(n, None, None, None, None, "")
+    assert result == "handle-single-escape"
+
+def test_read_token_even_dispatch_multiple_escape_character():
+    n = SimpleNamespace(
+        is_constituent_or_nonterminating_macro_character=lambda x: False,
+        handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+
+        is_single_escape_character=lambda x: False,
+        handle_single_escape_character=lambda state, current, read, stream, x: "handle-single-escape",
+
+        is_multiple_escape_character=lambda x: True,
+        handle_multiple_escape_character=lambda state, current, read, stream, x: "handle-multiple-escape",
+
+        is_valid_character=lambda x: True,
+        signal=set_signal,
+
+        is_terminating_macro_character=lambda x: False,
+        handle_terminating_macro_character=lambda state, current, read, stream, x: "handle-terminating-macro",
+
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, current, read, stream, x: "handle-whitespace"
+    )
+    result = read.read_token_even_dispatch(n, None, None, None, None, "")
+    assert result == "handle-multiple-escape"
+
+def test_read_token_even_dispatch_invalid_character():
+    n = SimpleNamespace(
+        is_constituent_or_nonterminating_macro_character=lambda x: False,
+        handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+
+        is_single_escape_character=lambda x: False,
+        handle_single_escape_character=lambda state, current, read, stream, x: "handle-single-escape",
+
+        is_multiple_escape_character=lambda x: False,
+        handle_multiple_escape_character=lambda state, current, read, stream, x: "handle-multiple-escape",
+
+        is_valid_character=lambda x: False,
+        signal=set_signal,
+
+        is_terminating_macro_character=lambda x: False,
+        handle_terminating_macro_character=lambda state, current, read, stream, x: "handle-terminating-macro",
+
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, current, read, stream, x: "handle-whitespace"
+    )
+    state = {
+        "signal": None
+    }
+    result = read.read_token_even_dispatch(n, state, None, None, None, "")
+    assert result == None
+    assert state["signal"] == "reader-error"
+
+def test_read_token_even_dispatch_terminating_macro_character():
+    n = SimpleNamespace(
+        is_constituent_or_nonterminating_macro_character=lambda x: False,
+        handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+
+        is_single_escape_character=lambda x: False,
+        handle_single_escape_character=lambda state, current, read, stream, x: "handle-single-escape",
+
+        is_multiple_escape_character=lambda x: False,
+        handle_multiple_escape_character=lambda state, current, read, stream, x: "handle-multiple-escape",
+
+        is_valid_character=lambda x: True,
+        signal=set_signal,
+
+        is_terminating_macro_character=lambda x: True,
+        handle_terminating_macro_character=lambda state, current, read, stream, x: "handle-terminating-macro",
+
+        is_whitespace_character=lambda x: False,
+        handle_whitespace_character=lambda state, current, read, stream, x: "handle-whitespace"
+    )
+    result = read.read_token_even_dispatch(n, None, None, None, None, "")
+    assert result == "handle-terminating-macro"
+
+def test_read_token_even_dispatch_whitespace_character():
+    n = SimpleNamespace(
+        is_constituent_or_nonterminating_macro_character=lambda x: False,
+        handle_constituent_or_nonterminating_macro_character=lambda state, current, read, stream, x: "handle-constituent-or-nonterminating-macro",
+
+        is_single_escape_character=lambda x: False,
+        handle_single_escape_character=lambda state, current, read, stream, x: "handle-single-escape",
+
+        is_multiple_escape_character=lambda x: False,
+        handle_multiple_escape_character=lambda state, current, read, stream, x: "handle-multiple-escape",
+
+        is_valid_character=lambda x: True,
+        signal=set_signal,
+
+        is_terminating_macro_character=lambda x: False,
+        handle_terminating_macro_character=lambda state, current, read, stream, x: "handle-terminating-macro",
+
+        is_whitespace_character=lambda x: True,
+        handle_whitespace_character=lambda state, current, read, stream, x: "handle-whitespace"
+    )
+    result = read.read_token_even_dispatch(n, None, None, None, None, "")
+    assert result == "handle-whitespace"
 
 def test_read_end_of_file():
     n = SimpleNamespace(
@@ -294,6 +428,11 @@ def run_tests():
 
     test_read_token()
     test_read_token_even_dispatch_constituent_or_nonterminating_macro_character()
+    test_read_token_even_dispatch_single_escape_character()
+    test_read_token_even_dispatch_multiple_escape_character()
+    test_read_token_even_dispatch_invalid_character()
+    test_read_token_even_dispatch_terminating_macro_character()
+    test_read_token_even_dispatch_whitespace_character()
 
     # create tests for read_token_{even,odd} handlers
 

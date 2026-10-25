@@ -1,4 +1,4 @@
-def is_whitespace(x):
+def is_whitespace_character(x):
     return x in " \n"
 
 def is_macro(x):
