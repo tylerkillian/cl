@@ -6,20 +6,24 @@ from character import \
     is_nonterminating_macro, \
     is_whitespace_character
 
+def read_token_even_dispatch_handle_constituent_or_nonterminating_macro_character(n, state, current, read, stream, y):
+    current["token"] += n.apply_readtable_case(y)
+    return
+
 def read_token_even_dispatch(n, state, current, read, stream, y):
     if n.is_constituent_or_nonterminating_macro_character(y):
-        return n.handle_constituent_or_nonterminating_macro_character(state, current, read, stream, y)
+        return n.read_token_even_dispatch_handle_constituent_or_nonterminating_macro_character(state, current, read, stream, y)
     elif n.is_single_escape_character(y):
-        return n.handle_single_escape_character(state, current, read, stream, y)
+        return n.read_token_even_dispatch_handle_single_escape_character(state, current, read, stream, y)
     elif n.is_multiple_escape_character(y):
-        return n.handle_multiple_escape_character(state, current, read, stream, y)
+        return n.read_token_even_dispatch_handle_multiple_escape_character(state, current, read, stream, y)
     elif not n.is_valid_character(y):
         n.signal(state, "reader-error")
         return None
     elif n.is_terminating_macro_character(y):
-        return n.handle_terminating_macro_character(state, current, read, stream, y)
+        return n.read_token_even_dispatch_handle_terminating_macro_character(state, current, read, stream, y)
     elif n.is_whitespace_character(y):
-        return n.handle_whitespace_character(state, current, read, stream, y)
+        return n.read_token_even_dispatch_handle_whitespace_character(state, current, read, stream, y)
 
 # CREATE TESTS FOR THIS
 def read_token_dispatch(n, state, current, stream, y):
@@ -77,37 +81,37 @@ def get_reader_macro_function(read, x):
     elif x == "\"":
         return read_string
 
-def handle_whitespace(n, state, read, stream, x):
+def read_dispatch_handle_whitespace_character(n, state, read, stream, x):
     return None
 
-def handle_macro_character(n, state, read, stream, x):
+def read_dispatch_handle_macro_character(n, state, read, stream, x):
     reader_macro_function = n.get_reader_macro_function(read, x)
     return reader_macro_function(stream, x)
 
-def handle_single_escape_character(n, state, read, stream, x):
+def read_dispatch_handle_single_escape_character(n, state, read, stream, x):
     y = streams.get_next_character(stream)
     if not y:
         n.signal(state, "end-of-file")
         return None
     return n.read_token(state, "even", stream, y)
 
-def handle_multiple_escape_character(n, state, read, stream, x):
+def read_dispatch_handle_multiple_escape_character(n, state, read, stream, x):
     return n.read_token(state, "odd", stream, "")
 
-def handle_constituent_character(n, state, read, stream, x):
+def read_dispatch_handle_constituent_character(n, state, read, stream, x):
     return n.read_token(state, "even", stream, x)
 
 def read_dispatch(n, state, read, stream, x):
     if n.is_whitespace_character(x):
-        return n.handle_whitespace_character(state, read, stream, x)
+        return n.read_dispatch_handle_whitespace_character(state, read, stream, x)
     elif n.is_macro(x):
-        return n.handle_macro_character(state, read, stream, x)
+        return n.read_dispatch_handle_macro_character(state, read, stream, x)
     elif n.is_single_escape(x):
-        return n.handle_single_escape(state, read, stream, x)
+        return n.read_dispatch_handle_single_escape(state, read, stream, x)
     elif n.is_multiple_escape(x):
-        return n.handle_multiple_escape(state, read, stream, x)
+        return n.read_dispatch_handle_multiple_escape(state, read, stream, x)
     elif n.is_constituent(x):
-        return n.handle_constituent(state, read, stream, x)
+        return n.read_dispatch_handle_constituent(state, read, stream, x)
     elif not n.is_valid(x):
         n.signal(state, "reader-error")
         return None
