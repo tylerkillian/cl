@@ -373,6 +373,18 @@ def test_read_token_even_dispatch_handle_constituent_or_nonterminating_macro_cha
     assert result == None
     assert current["token"] == "AB"
 
+def test_read_token_even_dispatch_handle_single_escape_character():
+    n = SimpleNamespace(
+        apply_readtable_case=lambda y: y
+    )
+    current = {
+        "token": "A"
+    }
+    stream = streams.create("B")
+    result = read.read_token_even_dispatch_handle_single_escape_character(n, None, current, None, stream, "'")
+    assert result == None
+    assert current["token"] == "AB"
+
 def test_read_token():
     n = SimpleNamespace(
         read_token_dispatch=fake_read_token_dispatch,
@@ -445,6 +457,7 @@ def run_tests():
     test_read_token_even_dispatch_whitespace_character()
 
     test_read_token_even_dispatch_handle_constituent_or_nonterminating_macro_character()
+    test_read_token_even_dispatch_handle_single_escape_character()
 
     # create tests for read_token_{even,odd} handlers
 

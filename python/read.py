@@ -10,6 +10,14 @@ def read_token_even_dispatch_handle_constituent_or_nonterminating_macro_characte
     current["token"] += n.apply_readtable_case(y)
     return
 
+def read_token_even_dispatch_handle_single_escape_character(n, state, current, read, stream, y):
+    z = streams.get_next_character(stream)
+    if not z:
+        n.signal(state, "end-of-file")
+        return None
+    current["token"] += z
+    return
+
 def read_token_even_dispatch(n, state, current, read, stream, y):
     if n.is_constituent_or_nonterminating_macro_character(y):
         return n.read_token_even_dispatch_handle_constituent_or_nonterminating_macro_character(state, current, read, stream, y)
